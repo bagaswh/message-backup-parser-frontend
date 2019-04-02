@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { readFile } from '../file-reader/file-reader';
 import { extname } from '../utils/file';
 import { parseZip, validateZip, storeZipToLocalStorage } from '../file-reader/zip';
+import { store } from '../redux/store/store';
+import { storeData } from '../redux/actions/actions';
 
 export default class FileInput extends Component {
   readFile(e: React.FormEvent) {
@@ -25,14 +27,19 @@ export default class FileInput extends Component {
       readFile(file, readFileAs).then(result => {
         const filename = file.name.replace(`.${extname(file.name)}`, '');
 
-        if (extension == 'zip') {
+        if (readFileAs == 'zip') {
           parseZip(result as ArrayBuffer).then(data => {
             validateZip(data.files, filename).then(isValid => {
               if (isValid) {
-                storeZipToLocalStorage(data.instance, data.files, filename);
+                storeZipToLocalStorage(data.instance, data.files, `backup_file_${filename}`).then(
+                  value => {
+                    store.dispatch(storeData(value));
+                  }
+                );
               }
             });
           });
+        } else {
         }
       });
     }
