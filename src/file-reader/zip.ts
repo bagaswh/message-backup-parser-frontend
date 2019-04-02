@@ -1,12 +1,11 @@
 import JSZip from 'jszip';
 import { extname } from '../utils/file';
-import { ObjectIndexer } from '../types';
 import localforage from 'localforage';
 import { saveAs } from 'file-saver';
 
 /**
  * parse contents inside zip file
- * @param buffer file buffer
+ * @param fileBuffer file buffer
  */
 export function parseZip(
   fileBuffer: ArrayBuffer
@@ -49,18 +48,15 @@ export function validateZip(files: ObjectIndexer<JSZip.JSZipObject>, filename: s
 }
 
 /**
- * store zip contents (extracting) into local storage
- * @param jszipInstance instance of JSZip (required to do the extracting process)
+ * extract files inside zip
+ * @param jsZip JSZip instance
  * @param files files inside zip file
  */
-export function storeZipToLocalStorage(
-  jszipInstance: JSZip,
-  files: ObjectIndexer<JSZip.JSZipObject>,
-  filename: string
-) {
+export function extractZip(jsZip: JSZip, files: ObjectIndexer<JSZip.JSZipObject>) {
   const filenames = Object.keys(files);
+
   const promises = filenames.map(filename => {
-    return jszipInstance
+    return jsZip
       .file(filename)
       .async('nodebuffer')
       .then(value => {
@@ -68,13 +64,37 @@ export function storeZipToLocalStorage(
       });
   });
 
-  Promise.all(promises).then(value => {
-    if (!localforage.getItem(filename)) {
-      localforage.setItem(filename, value);
-    }
+  return Promise.all(promises).then(value => {
+    return value;
   });
 }
 
+/**
+ * store zip contents (extracting) into local storage
+ * @param jsZip instance of JSZip (required to do the extracting process)
+ * @param files files inside zip file
+ */
+export function storeZipToLocalStorage(
+  jsZip: JSZip,
+  files: ObjectIndexer<JSZip.JSZipObject>,
+  filename: string
+) {
+  const zipData = extractZip(jsZip, files);
+
+  localforage.getItem(filename).then(item => {
+    if (!item) {
+      localforage.setItem(filename, zipData);
+    }
+  });
+
+  return zipData;
+}
+
+/**
+ * generate zip file from buffers and download
+ * @param filename the filename to be stored
+ * @param descriptors array of name and buffer of the file
+ */
 export function getZipFromBuffers(
   filename: string,
   descriptors: { name: string; data: Uint8Array }[]
