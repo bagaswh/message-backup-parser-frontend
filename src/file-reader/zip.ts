@@ -2,6 +2,7 @@ import JSZip from 'jszip';
 import { extname } from '../utils/file';
 import localforage from 'localforage';
 import { saveAs } from 'file-saver';
+import { ZipData } from '../types/redux-types';
 
 /**
  * parse contents inside zip file
@@ -74,20 +75,14 @@ export function extractZip(jsZip: JSZip, files: ObjectIndexer<JSZip.JSZipObject>
  * @param jsZip instance of JSZip (required to do the extracting process)
  * @param files files inside zip file
  */
-export function storeZipToLocalStorage(
-  jsZip: JSZip,
-  files: ObjectIndexer<JSZip.JSZipObject>,
-  filename: string
-) {
-  const zipData = extractZip(jsZip, files);
-
+export function storeZipToLocalStorage(jsZip: JSZip, data: ZipData[], filename: string) {
   localforage.getItem(filename).then(item => {
     if (!item) {
-      localforage.setItem(filename, zipData);
+      localforage.setItem(filename, data);
     }
   });
 
-  return zipData;
+  return data;
 }
 
 /**
