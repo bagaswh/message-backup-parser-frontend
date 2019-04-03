@@ -5,7 +5,7 @@ import { saveAs } from 'file-saver';
 import { ZipData } from '../types/redux-types';
 
 /**
- * parse contents inside zip file
+ * Parse contents inside zip file.
  * @param fileBuffer file buffer
  */
 export function parseZip(
@@ -25,8 +25,8 @@ export function parseZip(
 }
 
 /**
- * validate if the contents inside zip file is a good candidate of a 'valid' zip file
- * meaning the zip file contains the text file to be parsed
+ * Validate if the contents inside zip file is a good candidate of a 'valid' zip file,
+ * meaning the zip file contains the text file to be parsed.
  * @param files files inside zip
  * @param filename name of the zip file
  */
@@ -49,7 +49,7 @@ export function validateZip(files: ObjectIndexer<JSZip.JSZipObject>, filename: s
 }
 
 /**
- * extract files inside zip
+ * Extract files inside zip.
  * @param jsZip JSZip instance
  * @param files files inside zip file
  */
@@ -71,7 +71,7 @@ export function extractZip(jsZip: JSZip, files: ObjectIndexer<JSZip.JSZipObject>
 }
 
 /**
- * store zip contents (extracting) into local storage
+ * Store zip contents (extracting) into local storage.
  * @param jsZip instance of JSZip (required to do the extracting process)
  * @param files files inside zip file
  */
@@ -87,7 +87,7 @@ export function storeZipToLocalStorage(jsZip: JSZip, data: ZipData[], filename: 
 }
 
 /**
- * generate zip file from buffers and download
+ * Generate zip file from buffers and download.
  * @param filename the filename to be stored
  * @param descriptors array of name and buffer of the file
  */

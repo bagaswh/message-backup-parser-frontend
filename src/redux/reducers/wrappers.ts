@@ -10,6 +10,9 @@ import {
 } from '../actions/actions';
 import { ZipData } from '../../types/redux-types';
 
+/**
+ * Wrapping store-dispatching to store data into a single neat function.
+ */
 export function storeData(
   zipData: ZipData[] | null,
   textData: string,

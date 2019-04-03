@@ -2,14 +2,12 @@ import { FileInfo, ParsedMessage } from 'message-backup-parser';
 import {
   ActionFileInfo,
   ActionParsedMessage,
-  LogData,
   ActionLogData,
   LogType
 } from './../../types/redux-types.d';
 import { ActionTypes } from './action-types';
 import {
   ZipData,
-  Action,
   ActionStoreZipData,
   ActionStoreTextData,
   ActionDataList

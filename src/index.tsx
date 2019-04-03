@@ -10,6 +10,7 @@ import { store } from './redux/store/store';
 import { getDataList } from './helpers/localstorage';
 import { populateDataList } from './redux/actions/actions';
 
+// populate data list on startup
 getDataList().then(list => {
   store.dispatch(populateDataList(list));
 });

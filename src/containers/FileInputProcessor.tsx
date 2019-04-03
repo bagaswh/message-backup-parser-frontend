@@ -7,7 +7,6 @@ import { connect } from 'react-redux';
 
 import { Dispatch } from 'redux';
 import { storeData, log } from '../redux/reducers/wrappers';
-import { Parser } from 'message-backup-parser';
 import { indexOfFilter } from '../helpers/utils-object';
 import { parse } from '../helpers/parser';
 import { store } from '../redux/store/store';
