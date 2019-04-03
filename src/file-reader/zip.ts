@@ -11,11 +11,11 @@ import { ZipData } from '../types/redux-types';
 export function parseZip(
   fileBuffer: ArrayBuffer
 ): Promise<{ instance: JSZip; files: ObjectIndexer<JSZip.JSZipObject> }> {
-  const jszip = new JSZip();
+  const jsZip = new JSZip();
   return new Promise((resolve, reject) => {
-    jszip.loadAsync(fileBuffer).then(
+    jsZip.loadAsync(fileBuffer).then(
       zip => {
-        resolve({ instance: jszip, files: zip.files });
+        resolve({ instance: jsZip, files: zip.files });
       },
       error => {
         reject(error);
@@ -59,7 +59,7 @@ export function extractZip(jsZip: JSZip, files: ObjectIndexer<JSZip.JSZipObject>
   const promises = filenames.map(filename => {
     return jsZip
       .file(filename)
-      .async('nodebuffer')
+      .async('uint8array')
       .then(value => {
         return { name: filename, value };
       });
@@ -90,15 +90,12 @@ export function storeZipToLocalStorage(jsZip: JSZip, data: ZipData[], filename: 
  * @param filename the filename to be stored
  * @param descriptors array of name and buffer of the file
  */
-export function getZipFromBuffers(
-  filename: string,
-  descriptors: { name: string; data: Uint8Array }[]
-) {
-  const jszip = new JSZip();
+export function getZipFromBuffers(filename: string, descriptors: ZipData[]) {
+  const jsZip = new JSZip();
   descriptors.forEach(desc => {
-    jszip.file(desc.name, desc.data);
+    jsZip.file(desc.name, desc.value);
   });
-  jszip.generateAsync({ type: 'blob' }).then(blob => {
+  jsZip.generateAsync({ type: 'blob' }).then(blob => {
     saveAs(blob, filename);
   });
 }
