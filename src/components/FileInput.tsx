@@ -1,59 +1,18 @@
-import React, { Component } from 'react';
-import { readFile } from '../file-reader/file-reader';
-import { extname } from '../utils/file';
-import { parseZip, validateZip, storeZipToLocalStorage } from '../file-reader/zip';
-import { store } from '../redux/store/store';
-import { storeData } from '../redux/actions/actions';
+import React from 'react';
+import { SyntheticEvent } from 'react';
 
-export default class FileInput extends Component {
-  readFile(e: React.FormEvent) {
-    const target = e.target as HTMLInputElement;
-    const files = target.files;
-    if (files && files.length) {
-      const { name } = files[0];
-      const extension = extname(name);
+interface FileInputProps {
+  onClick: (e: SyntheticEvent) => void;
+}
 
-      let readFileAs: 'zip' | 'text' = 'text';
-      if (extension == 'zip') {
-        readFileAs = 'zip';
-      } else if (extension == 'txt') {
-        readFileAs = 'text';
-      } else {
-        alert('You gave unsupported file type!');
-        return;
-      }
-
-      const file = files[0];
-      readFile(file, readFileAs).then(result => {
-        const filename = file.name.replace(`.${extname(file.name)}`, '');
-
-        if (readFileAs == 'zip') {
-          parseZip(result as ArrayBuffer).then(data => {
-            validateZip(data.files, filename).then(isValid => {
-              if (isValid) {
-                storeZipToLocalStorage(data.instance, data.files, `backup_file_${filename}`).then(
-                  value => {
-                    store.dispatch(storeData(value));
-                  }
-                );
-              }
-            });
-          });
-        } else {
-        }
-      });
-    }
-  }
-
-  render() {
-    return (
-      <div>
-        <label>
-          {' '}
-          Input your file here
-          <input type='file' onChange={this.readFile.bind(this)} />
-        </label>
-      </div>
-    );
-  }
+export default function FileInput(props: FileInputProps) {
+  return (
+    <div>
+      <label>
+        {' '}
+        Input your file here
+        <input type='file' onChange={props.onClick} />
+      </label>
+    </div>
+  );
 }

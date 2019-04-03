@@ -6,7 +6,7 @@ import FileInput from '../components/FileInput';
 import { connect } from 'react-redux';
 
 import { Dispatch } from 'redux';
-import { storeData } from '../redux/reducers/wrappers';
+import { storeData, log } from '../redux/reducers/wrappers';
 import { Parser } from 'message-backup-parser';
 import { indexOfFilter } from '../helpers/utils-object';
 import { parse } from '../helpers/parser';
@@ -38,12 +38,12 @@ function mapDispatchToProps(dispatch: Dispatch) {
             const aParsing = performance.now();
             parseZip(result as ArrayBuffer).then(data => {
               const bParsing = performance.now();
-              console.log('done parsing: ', bParsing - aParsing);
+              log({ type: 'ok', message: `done parsing:  ${bParsing - aParsing}` });
 
               const aValidating = performance.now();
               validateZip(data.files, filename).then(isValid => {
                 const bValidating = performance.now();
-                console.log('done validating: ', bValidating - aValidating);
+                log({ type: 'ok', message: `done validating:  ${bValidating - aValidating}` });
 
                 if (isValid) {
                   let textFileName = filename;
@@ -54,12 +54,12 @@ function mapDispatchToProps(dispatch: Dispatch) {
                   const aExtracting = performance.now();
                   extractZip(data.instance, data.files).then(zipData => {
                     const bExtracting = performance.now();
-                    console.log('done extracting: ', bExtracting - aExtracting);
+                    log({ type: 'ok', message: `done extracting:  ${bExtracting - aExtracting}` });
 
                     const aIndexing = performance.now();
                     const index = indexOfFilter(zipData, { name: textFileName });
                     const bIndexing = performance.now();
-                    console.log('done indexing: ', bIndexing - aIndexing);
+                    log({ type: 'ok', message: `done indexing:  ${bIndexing - aIndexing}` });
 
                     // @ts-ignore
                     const str = new TextDecoder('utf-8').decode(zipData[index].value as Uint8Array);
@@ -75,7 +75,6 @@ function mapDispatchToProps(dispatch: Dispatch) {
             });
           } else {
             const { data: parsedMessage, fileinfo } = parse(result as string);
-            console.log(result);
 
             if (parsedMessage && fileinfo) {
               storeData(null, result as string, parsedMessage, fileinfo);
