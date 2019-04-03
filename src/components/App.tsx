@@ -3,6 +3,7 @@ import './App.css';
 import FileInputProcessor from '../containers/FileInputProcessor';
 import DataListContainer from '../containers/DataListContainer';
 import LogContainer from '../containers/LogContainer';
+import FileInfoContainer from '../containers/FileInfoContainer';
 
 class App extends Component {
   render() {
@@ -10,6 +11,7 @@ class App extends Component {
       <div>
         <LogContainer />
         <DataListContainer />
+        <FileInfoContainer />
         <FileInputProcessor />
       </div>
     );
