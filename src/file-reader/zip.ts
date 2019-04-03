@@ -76,13 +76,14 @@ export function extractZip(jsZip: JSZip, files: ObjectIndexer<JSZip.JSZipObject>
  * @param files files inside zip file
  */
 export function storeZipToLocalStorage(jsZip: JSZip, data: ZipData[], filename: string) {
-  localforage.getItem(filename).then(item => {
+  return localforage.getItem(filename).then(item => {
     if (!item) {
       localforage.setItem(filename, data);
+      return data;
     }
-  });
 
-  return data;
+    return null;
+  });
 }
 
 /**

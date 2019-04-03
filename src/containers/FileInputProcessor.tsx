@@ -10,6 +10,8 @@ import { storeData, log } from '../redux/reducers/wrappers';
 import { Parser } from 'message-backup-parser';
 import { indexOfFilter } from '../helpers/utils-object';
 import { parse } from '../helpers/parser';
+import { store } from '../redux/store/store';
+import { populateDataList } from '../redux/actions/actions';
 
 function mapDispatchToProps(dispatch: Dispatch) {
   return {
@@ -45,6 +47,8 @@ function mapDispatchToProps(dispatch: Dispatch) {
                 const bValidating = performance.now();
                 log({ type: 'ok', message: `done validating:  ${bValidating - aValidating}` });
 
+                console.log(data.files, filename);
+
                 if (isValid) {
                   let textFileName = filename;
                   if (!data.files[textFileName]) {
@@ -66,8 +70,17 @@ function mapDispatchToProps(dispatch: Dispatch) {
                     const { data: parsedMessage, fileinfo } = parse(str);
 
                     if (parse) {
-                      storeZipToLocalStorage(data.instance, zipData, `backup_file_${filename}`);
+                      storeZipToLocalStorage(
+                        data.instance,
+                        zipData,
+                        `backup_file_${filename}`
+                      ).then(data => {
+                        if (!null) {
+                          store.dispatch(populateDataList([`backup_file_${filename}`]));
+                        }
+                      });
                       storeData(zipData, '', parsedMessage, fileinfo);
+                      // store
                     }
                   });
                 }

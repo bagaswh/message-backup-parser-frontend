@@ -40,7 +40,7 @@ export function textFileData(data = initialState.textFileData, action: ActionSto
 
 export function dataList(list = initialState.dataList, action: ActionDataList) {
   if (action.type == ActionTypes.DATA_LIST) {
-    return action.payload.list;
+    return [...list].concat(action.payload.list);
   }
 
   return list;

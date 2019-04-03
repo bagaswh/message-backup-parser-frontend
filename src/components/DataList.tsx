@@ -7,7 +7,6 @@ interface DataListProps {
 
 export default function DataList(props: DataListProps) {
   const list = props.dataList.map(item => {
-    console.log(item);
     return (
       <li key={item} onClick={e => props.onClick(e, item)}>
         {item.replace('backup_file_', '')}
