@@ -53,21 +53,20 @@ export function validateZip(files: ObjectIndexer<JSZip.JSZipObject>, filename: s
  * @param jsZip JSZip instance
  * @param files files inside zip file
  */
-export function extractZip(jsZip: JSZip, files: ObjectIndexer<JSZip.JSZipObject>) {
+export async function extractZip(
+  jsZip: JSZip,
+  filename: string,
+  files: ObjectIndexer<JSZip.JSZipObject>
+) {
   const filenames = Object.keys(files);
+  const zipData: ZipData = { filename };
 
-  const promises = filenames.map(filename => {
-    return jsZip
-      .file(filename)
-      .async('uint8array')
-      .then(value => {
-        return { name: filename, value };
-      });
-  });
+  for (let filename of filenames) {
+    const value = await jsZip.file(filename).async('uint8array');
+    zipData[filename] = value;
+  }
 
-  return Promise.all(promises).then(value => {
-    return value;
-  });
+  return zipData;
 }
 
 /**
@@ -75,11 +74,11 @@ export function extractZip(jsZip: JSZip, files: ObjectIndexer<JSZip.JSZipObject>
  * @param jsZip instance of JSZip (required to do the extracting process)
  * @param files files inside zip file
  */
-export function storeZipToLocalStorage(jsZip: JSZip, data: ZipData[], filename: string) {
+export function storeZipToLocalStorage(jsZip: JSZip, zipData: ZipData, filename: string) {
   return localforage.getItem(filename).then(item => {
     if (!item) {
-      localforage.setItem(filename, data);
-      return data;
+      localforage.setItem(filename, zipData);
+      return zipData;
     }
 
     return null;
@@ -91,10 +90,10 @@ export function storeZipToLocalStorage(jsZip: JSZip, data: ZipData[], filename: 
  * @param filename the filename to be stored
  * @param descriptors array of name and buffer of the file
  */
-export function getZipFromBuffers(filename: string, descriptors: ZipData[]) {
+export function getZipFromBuffers(filename: string, zipData: ZipData) {
   const jsZip = new JSZip();
-  descriptors.forEach(desc => {
-    jsZip.file(desc.name, desc.value);
+  Object.keys(zipData).forEach(filename => {
+    jsZip.file(filename, zipData[filename]);
   });
   jsZip.generateAsync({ type: 'blob' }).then(blob => {
     saveAs(blob, filename);

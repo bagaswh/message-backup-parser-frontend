@@ -14,7 +14,7 @@ import {
 } from '../../types/redux-types';
 
 const initialState: State = {
-  zipData: [],
+  zipData: { filename: '' },
   textFileData: '',
   fileInfo: null,
   dataList: [],
@@ -22,7 +22,7 @@ const initialState: State = {
   logs: {}
 };
 
-export function zipData(data: ZipData[] | null = initialState.zipData, action: ActionStoreZipData) {
+export function zipData(data: ZipData | null = initialState.zipData, action: ActionStoreZipData) {
   if (action.type == ActionTypes.STORE_ZIP_DATA) {
     return action.payload.data;
   }

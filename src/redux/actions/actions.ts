@@ -15,7 +15,7 @@ import {
 
 import uuidv1 from 'uuid/v1';
 
-export function storeZipData(data: ZipData[]): ActionStoreZipData {
+export function storeZipData(data: ZipData): ActionStoreZipData {
   return {
     type: ActionTypes.STORE_ZIP_DATA,
     payload: { data }

@@ -7,10 +7,10 @@ import { connect } from 'react-redux';
 
 import { Dispatch } from 'redux';
 import { storeData, log } from '../redux/reducers/wrappers';
-import { indexOfFilter } from '../helpers/utils-object';
 import { parse } from '../helpers/parser';
 import { store } from '../redux/store/store';
 import { populateDataList } from '../redux/actions/actions';
+import localforage from 'localforage';
 
 function mapDispatchToProps(dispatch: Dispatch) {
   return {
@@ -36,39 +36,22 @@ function mapDispatchToProps(dispatch: Dispatch) {
           const filename = file.name.replace(`.${extname(file.name)}`, '');
 
           if (readFileAs == 'zip') {
-            const aParsing = performance.now();
             parseZip(result as ArrayBuffer).then(data => {
-              const bParsing = performance.now();
-              log({ type: 'ok', message: `done parsing:  ${bParsing - aParsing}` });
-
-              const aValidating = performance.now();
               validateZip(data.files, filename).then(isValid => {
-                const bValidating = performance.now();
-                log({ type: 'ok', message: `done validating:  ${bValidating - aValidating}` });
-
-                console.log(data.files, filename);
-
                 if (isValid) {
                   let textFileName = filename;
                   if (!data.files[textFileName]) {
                     textFileName = '_chat.txt';
                   }
 
-                  const aExtracting = performance.now();
-                  extractZip(data.instance, data.files).then(zipData => {
-                    const bExtracting = performance.now();
-                    log({ type: 'ok', message: `done extracting:  ${bExtracting - aExtracting}` });
-
-                    const aIndexing = performance.now();
-                    const index = indexOfFilter(zipData, { name: textFileName });
-                    const bIndexing = performance.now();
-                    log({ type: 'ok', message: `done indexing:  ${bIndexing - aIndexing}` });
-
-                    // @ts-ignore
-                    const str = new TextDecoder('utf-8').decode(zipData[index].value as Uint8Array);
+                  extractZip(data.instance, filename, data.files).then(zipData => {
+                    const str = new TextDecoder('utf-8').decode((zipData[filename] ||
+                      zipData['_chat.txt']) as Uint8Array);
                     const { data: parsedMessage, fileinfo } = parse(str);
 
                     if (parse) {
+                      zipData.filename = filename;
+
                       storeZipToLocalStorage(
                         data.instance,
                         zipData,
@@ -79,7 +62,6 @@ function mapDispatchToProps(dispatch: Dispatch) {
                         }
                       });
                       storeData(zipData, '', parsedMessage, fileinfo);
-                      // store
                     }
                   });
                 }
@@ -89,7 +71,9 @@ function mapDispatchToProps(dispatch: Dispatch) {
             const { data: parsedMessage, fileinfo } = parse(result as string);
 
             if (parsedMessage && fileinfo) {
+              localforage.setItem(`backup_file_${filename}`, result);
               storeData(null, result as string, parsedMessage, fileinfo);
+              store.dispatch(populateDataList([`backup_file_${filename}`]));
             }
           }
         });

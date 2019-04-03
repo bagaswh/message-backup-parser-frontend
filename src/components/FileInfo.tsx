@@ -42,7 +42,7 @@ export default function FileInfoComponent(props: FileInfoProps) {
         {chatParticipants &&
           chatParticipants.map((party, index) => {
             return (
-              <span>
+              <span key={index}>
                 {party} {index == chatParticipants.length - 1 ? '.' : ','}
               </span>
             );

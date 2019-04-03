@@ -14,12 +14,12 @@ import { ZipData } from '../../types/redux-types';
  * Wrapping store-dispatching to store data into a single neat function.
  */
 export function storeData(
-  zipData: ZipData[] | null,
+  zipData: ZipData | null,
   textData: string,
   parsedMessage: ParsedMessage,
   fileinfo: FileInfo
 ) {
-  store.dispatch(storeZipData(zipData || []));
+  store.dispatch(storeZipData(zipData || { filename: '' }));
   store.dispatch(storeTextData(textData || ''));
 
   store.dispatch(storeParsedMessage(parsedMessage));

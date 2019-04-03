@@ -1,13 +1,12 @@
 import { FileInfo, ParsedMessage } from 'message-backup-parser';
 
 /** redux interfaces */
-export interface ZipData {
-  name: string;
-  value: Uint8Array;
+export interface ZipData extends ObjectIndexer<Uint8Array | string> {
+  filename: string;
 }
 
 export interface State {
-  zipData: Data[];
+  zipData: ZipData;
   textFileData: string | null;
   fileInfo: FileInfo | null;
   dataList: string[];
@@ -23,7 +22,7 @@ export interface Action {
 }
 
 export interface ActionStoreZipData extends Action {
-  payload: { data: Data[] };
+  payload: { data: ZipData };
 }
 
 export interface ActionStoreTextData extends Action {
