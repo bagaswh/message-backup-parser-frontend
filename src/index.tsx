@@ -7,8 +7,9 @@ import App from './components/App';
 import * as serviceWorker from './serviceWorker';
 import { Provider } from 'react-redux';
 import { store } from './redux/store/store';
-import { getDataList } from './helpers/localstorage';
+import { getDataList } from './common/localstorage';
 import { populateDataList } from './redux/actions/actions';
+import Cache from './common/cache';
 
 // populate data list on startup
 getDataList().then(list => {

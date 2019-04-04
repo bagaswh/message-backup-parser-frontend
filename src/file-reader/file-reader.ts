@@ -18,3 +18,5 @@ export function readFile(file: File, as: 'zip' | 'text') {
     };
   });
 }
+
+// export function

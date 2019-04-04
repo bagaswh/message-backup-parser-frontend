@@ -1,9 +1,9 @@
 import { connect } from 'react-redux';
-import DataList from '../components/DataList';
+import DataList from '../components/renderer/DataList';
 import { MouseEvent } from 'react';
 import { Dispatch } from 'redux';
 import { storeData, log } from '../redux/reducers/wrappers';
-import { loadData } from '../helpers/localstorage';
+import { loadData } from '../common/localstorage';
 import { State, ZipData } from '../types/redux-types';
 import { parse } from '../helpers/parser';
 
@@ -13,10 +13,22 @@ function mapStateToProps(state: State) {
   };
 }
 
+// store currently selected key
+let currentKey = '';
+
 function mapDispatchToProps(dispatch: Dispatch) {
   return {
     onClick: (e: MouseEvent, key: string) => {
+      if (key == currentKey) {
+        return;
+      }
+
+      currentKey = key;
+
+      const aLoading = performance.now();
       loadData<ZipData | string>(key).then(data => {
+        const bLoading = performance.now();
+        log({ type: 'ok', message: `done loading: ${(bLoading - aLoading).toFixed(3)}ms` });
         let str;
         if (typeof data == 'string') {
           str = data;

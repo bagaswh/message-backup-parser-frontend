@@ -11,7 +11,7 @@ export default function FileInput(props: FileInputProps) {
       <label>
         {' '}
         Input your file here
-        <input type='file' onChange={props.onClick} />
+        <input type='file' onChange={props.onClick} style={{ display: 'block' }} />
       </label>
     </div>
   );

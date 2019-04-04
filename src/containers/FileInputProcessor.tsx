@@ -12,6 +12,26 @@ import { store } from '../redux/store/store';
 import { populateDataList } from '../redux/actions/actions';
 import localforage from 'localforage';
 
+function generateRandomColor(chatParticipants: string[]) {
+  let colors: { [index: string]: string } = {};
+  for (let participant of chatParticipants) {
+    let rgb = [];
+    for (let i = 0; i < 3; i++) {
+      let hexChars = '1234567890abcdef'.split('');
+      let colorComponent = new Array(2)
+        .fill('')
+        .map(char => {
+          let pickedChar = hexChars[~~(Math.random() * hexChars.length)];
+          return pickedChar;
+        })
+        .join('');
+      rgb.push(colorComponent);
+    }
+    colors[participant] = '#' + rgb.join('');
+  }
+  return colors;
+}
+
 function mapDispatchToProps(dispatch: Dispatch) {
   return {
     onClick: (e: SyntheticEvent) => {
